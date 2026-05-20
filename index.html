@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>音频算法系统补强计划</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail" aria-label="学习导航">
+        <div class="brand">
+          <div class="mark" aria-hidden="true">A</div>
+          <div>
+            <strong>Audio Lab</strong>
+            <span>Conference DSP</span>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="主要视图">
+          <button class="nav-button active" data-tab="path" type="button">
+            <i data-lucide="calendar-days" aria-hidden="true"></i>
+            <span>学习路径</span>
+          </button>
+          <button class="nav-button" data-tab="map" type="button">
+            <i data-lucide="radar" aria-hidden="true"></i>
+            <span>算法地图</span>
+          </button>
+          <button class="nav-button" data-tab="projects" type="button">
+            <i data-lucide="wrench" aria-hidden="true"></i>
+            <span>实战项目</span>
+          </button>
+          <button class="nav-button" data-tab="resources" type="button">
+            <i data-lucide="book-open" aria-hidden="true"></i>
+            <span>资料库</span>
+          </button>
+          <button class="nav-button" data-tab="review" type="button">
+            <i data-lucide="badge-check" aria-hidden="true"></i>
+            <span>能力验收</span>
+          </button>
+        </nav>
+
+        <div class="focus-box">
+          <span>建议节奏</span>
+          <strong>12-15 h / 周</strong>
+          <p>工作日 90 分钟，周末 6 小时，优先做可运行实验。</p>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">厦门亿联网络 · 音频算法补强</p>
+            <h1>把硕士级音频算法内容压缩成 24 周工程路线</h1>
+            <p class="lead">
+              面向会议终端、麦克风阵列、实时通信链路：DSP 基础、声学建模、AEC、降噪、声源定位、波束形成、深度学习与量产评测。
+            </p>
+          </div>
+          <div class="signal-panel" aria-label="信号链可视化">
+            <canvas id="signalCanvas" width="760" height="360"></canvas>
+            <div class="signal-labels" aria-hidden="true">
+              <span>Far-end</span>
+              <span>AEC</span>
+              <span>BF</span>
+              <span>NS</span>
+              <span>AGC</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="control-strip" aria-label="学习控制台">
+          <label class="search">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input id="searchInput" type="search" placeholder="搜索 AEC、MUSIC、RNNoise、ERLE、MVDR..." />
+          </label>
+          <div class="segments" role="group" aria-label="阶段筛选">
+            <button class="segment active" data-filter="all" type="button">全部</button>
+            <button class="segment" data-filter="foundation" type="button">基础</button>
+            <button class="segment" data-filter="classic" type="button">传统算法</button>
+            <button class="segment" data-filter="deep" type="button">深度学习</button>
+            <button class="segment" data-filter="product" type="button">工程化</button>
+          </div>
+          <button id="resetProgress" class="icon-button" type="button" aria-label="重置进度" title="重置进度">
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+          </button>
+        </section>
+
+        <section class="stats-grid" aria-label="整体进度">
+          <article class="stat">
+            <span>完成任务</span>
+            <strong id="doneCount">0</strong>
+          </article>
+          <article class="stat">
+            <span>总任务</span>
+            <strong id="totalCount">0</strong>
+          </article>
+          <article class="stat">
+            <span>推荐项目</span>
+            <strong>6</strong>
+          </article>
+          <article class="stat accent">
+            <span>当前优先级</span>
+            <strong>先稳 DSP</strong>
+          </article>
+        </section>
+
+        <section id="path" class="panel active" aria-labelledby="pathTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Roadmap</p>
+              <h2 id="pathTitle">24 周学习路径</h2>
+            </div>
+            <p>每周都有“知识点、代码实验、验收标准”，目标是能解释、能复现、能调参、能上线排障。</p>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </section>
+
+        <section id="map" class="panel" aria-labelledby="mapTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Knowledge Map</p>
+              <h2 id="mapTitle">音频算法知识地图</h2>
+            </div>
+            <p>把你工作中会遇到的模块按依赖关系展开，先抓主干，再补旁支。</p>
+          </div>
+          <div id="knowledgeMap" class="card-grid"></div>
+        </section>
+
+        <section id="projects" class="panel" aria-labelledby="projectTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Project Lab</p>
+              <h2 id="projectTitle">从零到会议音频链路的 6 个项目</h2>
+            </div>
+            <p>每个项目都产出代码、波形图、指标表和一页复盘，适合做入职后的作品集。</p>
+          </div>
+          <div id="projectList" class="project-list"></div>
+        </section>
+
+        <section id="resources" class="panel" aria-labelledby="resourceTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Resource Library</p>
+              <h2 id="resourceTitle">权威资料与开源代码</h2>
+            </div>
+            <p>优先读可复现实验、标准、开源实现和经典教材，减少“看懂很多但写不出”的消耗。</p>
+          </div>
+          <div id="resourceList" class="resource-list"></div>
+        </section>
+
+        <section id="review" class="panel" aria-labelledby="reviewTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Checkpoint</p>
+              <h2 id="reviewTitle">工作能力验收清单</h2>
+            </div>
+            <p>这些问题如果能用白板、代码和音频样例讲清楚，基本能支撑会议音频算法岗位的日常战斗。</p>
+          </div>
+          <div id="reviewList" class="check-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="./lessons.js?v=3"></script>
+    <script src="./lesson-extras.js?v=3"></script>
+    <script src="./app.js?v=3"></script>
+  </body>
+</html>

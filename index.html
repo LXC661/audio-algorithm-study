@@ -26,6 +26,10 @@
             <i data-lucide="radar" aria-hidden="true"></i>
             <span>算法地图</span>
           </button>
+          <button class="nav-button" data-tab="job" type="button">
+            <i data-lucide="briefcase-business" aria-hidden="true"></i>
+            <span>岗位对照</span>
+          </button>
           <button class="nav-button" data-tab="projects" type="button">
             <i data-lucide="wrench" aria-hidden="true"></i>
             <span>实战项目</span>
@@ -96,7 +100,7 @@
           </article>
           <article class="stat">
             <span>推荐项目</span>
-            <strong>6</strong>
+            <strong id="projectCount">0</strong>
           </article>
           <article class="stat accent">
             <span>当前优先级</span>
@@ -130,11 +134,75 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">Project Lab</p>
-              <h2 id="projectTitle">从零到会议音频链路的 6 个项目</h2>
+              <h2 id="projectTitle">从零到岗位能力的项目</h2>
             </div>
             <p>每个项目都产出代码、波形图、指标表和一页复盘，适合做入职后的作品集。</p>
           </div>
           <div id="projectList" class="project-list"></div>
+        </section>
+
+        <section id="job" class="panel" aria-labelledby="jobTitle">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Job Match</p>
+              <h2 id="jobTitle">26 届声学算法培训生岗位对照</h2>
+            </div>
+            <p>把截图里的职责和要求拆成可学习、可验证、可做项目的能力块，方便逐项补齐。</p>
+          </div>
+
+          <div class="job-overview">
+            <article class="job-card">
+              <h3>职位描述</h3>
+              <ol class="job-list">
+                <li>参与面向嵌入式应用的声学算法开发、移植及项目落地。</li>
+                <li>参与 SOC/DSP 系统相关算法设计、开发、调试及功能验证。</li>
+                <li>熟悉虚拟环绕声、空间音频、上混/下混、混响、干湿声分离、音频分轨、主动降噪、全景声、深度学习音效算法。</li>
+                <li>负责声学算法上位机的软件开发及调试。</li>
+                <li>负责音频流信号搭建和调音准备。</li>
+                <li>负责音频算法应用架构与性能升级优化。</li>
+                <li>跟进市场需求，对标市场所有音响，并进行评价和分析。</li>
+              </ol>
+            </article>
+
+            <article class="job-card">
+              <h3>职位要求</h3>
+              <ol class="job-list">
+                <li>硕士及以上学历，计算机、自动化、通信、电子工程等相关专业，具有良好的 C/C++ 语言基础。</li>
+                <li>掌握 Matlab、Python 等代码开发工具。</li>
+                <li>具有声学、音频等方面的信号处理算法基础，有相关研究和开发经验。</li>
+              </ol>
+              <div class="role-tags" aria-label="关键技能">
+                <span>C/C++</span>
+                <span>Python</span>
+                <span>Matlab</span>
+                <span>SOC/DSP</span>
+                <span>调音评测</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="coverage-grid" aria-label="内容覆盖情况">
+            <article class="coverage-card covered">
+              <span>已覆盖</span>
+              <h3>DSP、AEC、降噪、阵列、波束、深度学习</h3>
+              <p>原路线已经覆盖岗位里的声学算法主干，适合继续作为前 24 周学习骨架。</p>
+            </article>
+            <article class="coverage-card added">
+              <span>新补充</span>
+              <h3>空间音频、音效、分轨、全景声</h3>
+              <p>新增到算法地图、项目和验收清单，补齐上混/下混、混响、干湿声分离、虚拟环绕声等方向。</p>
+            </article>
+            <article class="coverage-card added">
+              <span>新补充</span>
+              <h3>SOC/DSP 移植、上位机调试、音频流搭建</h3>
+              <p>新增嵌入式移植项目，强调定点化、实时性能、功能验证、调音准备和调试工具链。</p>
+            </article>
+            <article class="coverage-card added">
+              <span>新补充</span>
+              <h3>市场音响对标评价</h3>
+              <p>加入竞品听测、客观指标、主观评价表和复盘报告，避免只学算法不懂产品听感。</p>
+            </article>
+          </div>
         </section>
 
         <section id="resources" class="panel" aria-labelledby="resourceTitle">
@@ -159,11 +227,55 @@
           <div id="reviewList" class="check-grid"></div>
         </section>
       </main>
+
+      <aside class="assistant-panel" aria-label="知识问答">
+        <section class="assistant-card" aria-labelledby="assistantTitle">
+          <header class="assistant-head">
+            <div>
+              <p class="eyebrow">AI Tutor</p>
+              <h2 id="assistantTitle">知识问答</h2>
+            </div>
+            <div class="assistant-tools">
+              <span id="chatStatus" class="status-chip">未连接</span>
+              <button id="chatSettingsToggle" class="icon-button" type="button" aria-label="设置问答接口" title="设置问答接口">
+                <i data-lucide="settings" aria-hidden="true"></i>
+              </button>
+            </div>
+          </header>
+
+          <div id="chatSettings" class="chat-settings" hidden>
+            <label>
+              <span>接口地址</span>
+              <input id="chatEndpointInput" type="url" placeholder="https://.../api/chat" autocomplete="off" />
+            </label>
+            <div class="chat-settings-actions">
+              <button id="saveChatEndpoint" class="secondary-button" type="button">保存</button>
+              <button id="clearChatEndpoint" class="ghost-button" type="button">清除</button>
+            </div>
+          </div>
+
+          <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+
+          <form id="chatForm" class="chat-form">
+            <label class="sr-only" for="chatQuestion">提问</label>
+            <textarea id="chatQuestion" rows="4" placeholder="例如：NLMS 为什么双讲时会发散？"></textarea>
+            <div class="chat-actions">
+              <button id="clearChat" class="icon-button" type="button" aria-label="清空问答" title="清空问答">
+                <i data-lucide="trash-2" aria-hidden="true"></i>
+              </button>
+              <button id="chatSubmit" class="primary-button" type="submit">
+                <span>提问</span>
+                <i data-lucide="send" aria-hidden="true"></i>
+              </button>
+            </div>
+          </form>
+        </section>
+      </aside>
     </div>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="./lessons.js?v=3"></script>
     <script src="./lesson-extras.js?v=3"></script>
-    <script src="./app.js?v=3"></script>
+    <script src="./app.js?v=4"></script>
   </body>
 </html>

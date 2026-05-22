@@ -280,6 +280,27 @@ const modules = [
     title: "实时通信",
     summary: "WebRTC APM、Opus、AGC、DRC、VAD、CNG、jitter buffer、PLC、上下行链路与弱网音频体验。",
     points: ["知道会议产品不是单点算法", "能解释端到端延迟和同步", "会把音质问题拆成链路问题"]
+  },
+  {
+    code: "FX",
+    filter: "classic",
+    title: "空间音频与音效算法",
+    summary: "虚拟环绕声、空间音频、上混/下混、混响、干湿声分离、音频分轨、全景声和基于深度学习的音效增强。",
+    points: ["能解释声像、HRTF、混响和干湿比的听感影响", "会做上混/下混与分轨的最小实验", "能把音效算法和产品调音目标对应起来"]
+  },
+  {
+    code: "SOC",
+    filter: "product",
+    title: "SOC/DSP 移植与调试",
+    summary: "面向嵌入式应用的算法移植、定点化、上位机调试、功能验证、音频流信号搭建、调音准备和性能升级。",
+    points: ["能把 Python/Matlab 原型迁移到 C/C++ 模块", "会设计 SOC/DSP 功能验证用例", "能定位实时链路中的延迟、溢出和 CPU 超限"]
+  },
+  {
+    code: "EVAL",
+    filter: "product",
+    title: "音响对标与调音评价",
+    summary: "跟进市场需求，对标主流音响产品，建立主观听测、客观指标、场景样例和竞品分析报告。",
+    points: ["会设计统一音源和听测场景", "能把听感词转成算法问题", "能输出竞品对标结论和优化优先级"]
   }
 ];
 
@@ -331,6 +352,22 @@ const projects = [
     summary: "把 AEC、DOA、BF、NS、AGC 和评测报告串成一条可演示链路，形成你的入职作品集。",
     deliverables: ["端到端 demo", "10 条音频 A/B 对比", "排障手册和调参手册"],
     code: "audio_lab pipeline --profile meeting4mic\n audio_lab compare v1 v2"
+  },
+  {
+    phase: "P6",
+    filter: "classic",
+    title: "空间音频与音效算法工作台",
+    summary: "补齐岗位里的虚拟环绕声、空间音频、上混/下混、混响、干湿声分离、音频分轨、全景声和深度音效算法。",
+    deliverables: ["上混/下混 A/B 样例", "混响与干湿比调音面板", "分轨/全景声听感评价表"],
+    code: "audio_lab spatial --mode upmix\n audio_lab fx --reverb --wet 0.25"
+  },
+  {
+    phase: "P7",
+    filter: "product",
+    title: "SOC/DSP 移植与上位机调试链路",
+    summary: "把算法原型迁移到嵌入式约束下，建立音频流信号、调音准备、上位机调试、功能验证和性能优化流程。",
+    deliverables: ["C/C++ 模块接口", "功能验证用例表", "CPU/内存/延迟优化报告"],
+    code: "audio_lab stream --profile soc\n audio_lab verify --case latency"
   }
 ];
 
@@ -453,6 +490,18 @@ const reviews = [
     items: ["吞字、断续、金属音、残响、啸叫的排查路径", "AGC/NS/AEC/BF 的相互影响", "CPU 超限后的降级策略", "版本回归听测流程"]
   },
   {
+    filter: "classic",
+    title: "空间音频与音效验收",
+    summary: "能解释并复现实习岗位里提到的音效算法方向。",
+    items: ["虚拟环绕声和空间音频的声像建立", "上混/下混的通道映射与相位风险", "混响、干湿声分离和分轨的听感指标", "全景声与深度学习音效算法的输入输出"]
+  },
+  {
+    filter: "product",
+    title: "嵌入式与调试验收",
+    summary: "能把算法从原型推进到 SOC/DSP 与上位机调试流程。",
+    items: ["C/C++ 定点化和状态缓存设计", "SOC/DSP 功能验证和性能 profiling", "音频流信号搭建与调音准备", "市场音响对标评价与分析报告"]
+  },
+  {
     filter: "product",
     title: "沟通表达验收",
     summary: "能把复杂算法转成团队能执行的方案。",
@@ -460,11 +509,43 @@ const reviews = [
   }
 ];
 
+const CHAT_ENDPOINT_KEY = "audioPlanChatEndpoint";
+const CHAT_MESSAGES_KEY = "audioPlanChatMessages";
+const CHAT_HISTORY_LIMIT = 12;
+const JOB_PROFILE = {
+  role: "26 届声学算法培训生",
+  responsibilities: [
+    "嵌入式应用声学算法开发、移植及项目落地",
+    "SOC/DSP 系统算法设计、开发、调试及功能验证",
+    "虚拟环绕声、空间音频、上混/下混、混响、干湿声分离、音频分轨、主动降噪、全景声、深度学习音效算法",
+    "声学算法上位机软件开发及调试",
+    "音频流信号搭建和调音准备",
+    "音频算法应用架构与性能升级优化",
+    "市场音响对标评价和分析"
+  ],
+  requirements: [
+    "硕士及以上，计算机/自动化/通信/电子工程等相关专业",
+    "良好 C/C++ 基础",
+    "掌握 Matlab、Python 等开发工具",
+    "具备声学、音频信号处理算法基础和研发经验"
+  ]
+};
+
+function readJson(key, fallback) {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "null") ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const state = {
   tab: "path",
   filter: "all",
   query: "",
-  progress: JSON.parse(localStorage.getItem("audioPlanProgress") || "{}")
+  progress: readJson("audioPlanProgress", {}),
+  chatEndpoint: localStorage.getItem(CHAT_ENDPOINT_KEY) || "",
+  chatMessages: readJson(CHAT_MESSAGES_KEY, [])
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -526,6 +607,242 @@ function matches(item) {
 
 function saveProgress() {
   localStorage.setItem("audioPlanProgress", JSON.stringify(state.progress));
+}
+
+function saveChatMessages() {
+  const keptMessages = state.chatMessages.slice(-CHAT_HISTORY_LIMIT);
+  state.chatMessages = keptMessages;
+  localStorage.setItem(CHAT_MESSAGES_KEY, JSON.stringify(keptMessages));
+}
+
+function roleLabel(role) {
+  return role === "user" ? "你" : "AI";
+}
+
+function renderChatText(content) {
+  return escapeHtml(content).replaceAll("\n", "<br>");
+}
+
+function setChatStatus(text, mode = "") {
+  const status = $("#chatStatus");
+  if (!status) {
+    return;
+  }
+  status.textContent = text;
+  status.className = `status-chip${mode ? ` ${mode}` : ""}`;
+}
+
+function renderChatMessages() {
+  const container = $("#chatMessages");
+  if (!container) {
+    return;
+  }
+
+  if (!state.chatMessages.length) {
+    const emptyText = state.chatEndpoint
+      ? "直接提问音频算法、学习路线、实验设计和排障问题。"
+      : "先在右上角配置代理接口，然后可以直接问音频算法、学习路线、实验设计和排障问题。";
+    container.innerHTML = `
+      <div class="chat-empty">
+        ${emptyText}
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = state.chatMessages.map((message) => `
+    <article class="chat-message ${message.role}">
+      <span class="chat-role">${roleLabel(message.role)}</span>
+      <div class="chat-text">${renderChatText(message.content)}</div>
+    </article>
+  `).join("");
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendChatMessage(role, content) {
+  state.chatMessages.push({ role, content });
+  saveChatMessages();
+  renderChatMessages();
+}
+
+function getProgressSummary() {
+  const total = plan.reduce((sum, week) => sum + week.tasks.length, 0);
+  const done = Object.values(state.progress).filter(Boolean).length;
+  return { done, total };
+}
+
+function buildStudyContext() {
+  const activeWeek = Number(location.hash.match(/^#week-(\d+)$/)?.[1]);
+  const week = plan.find((item) => item.week === activeWeek);
+  const lesson = activeWeek ? getLesson(activeWeek) : null;
+
+  return {
+    page: "音频算法系统补强计划",
+    activeTab: state.tab,
+    filter: state.filter,
+    search: state.query,
+    progress: getProgressSummary(),
+    jobProfile: JOB_PROFILE,
+    currentLesson: week && lesson ? {
+      week: week.week,
+      phase: week.phase,
+      title: lesson.title,
+      objective: lesson.objective,
+      mentalModel: lesson.mentalModel,
+      questions: lesson.questions
+    } : null,
+    roadmap: plan.map((item) => ({
+      week: item.week,
+      phase: item.phase,
+      title: item.title,
+      summary: item.summary,
+      tags: item.tags,
+      tasks: item.tasks
+    })),
+    modules: modules.map((item) => ({
+      code: item.code,
+      title: item.title,
+      summary: item.summary
+    })),
+    projects: projects.map((item) => ({
+      phase: item.phase,
+      title: item.title,
+      summary: item.summary,
+      deliverables: item.deliverables
+    }))
+  };
+}
+
+function parseModelResponse(payload) {
+  if (typeof payload === "string") {
+    return payload;
+  }
+  return payload.answer ||
+    payload.text ||
+    payload.content ||
+    payload.message?.content ||
+    payload.choices?.[0]?.message?.content ||
+    payload.choices?.[0]?.text ||
+    payload.output_text ||
+    "";
+}
+
+async function requestModelAnswer(question) {
+  const response = await fetch(state.chatEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      question,
+      messages: state.chatMessages.slice(-8),
+      context: buildStudyContext()
+    })
+  });
+
+  const contentType = response.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json")
+    ? await response.json()
+    : await response.text();
+
+  if (!response.ok) {
+    const detail = typeof payload === "string" ? payload : payload.error || payload.message || JSON.stringify(payload);
+    throw new Error(detail || `请求失败：${response.status}`);
+  }
+
+  const answer = parseModelResponse(payload).trim();
+  if (!answer) {
+    throw new Error("接口没有返回可显示的回答。");
+  }
+  return answer;
+}
+
+function updateChatEndpointUi() {
+  const input = $("#chatEndpointInput");
+  if (input) {
+    input.value = state.chatEndpoint;
+  }
+  setChatStatus(state.chatEndpoint ? "已连接" : "未连接", state.chatEndpoint ? "ready" : "");
+}
+
+async function handleChatSubmit(event) {
+  event.preventDefault();
+  const input = $("#chatQuestion");
+  const submit = $("#chatSubmit");
+  const question = input.value.trim();
+  if (!question) {
+    return;
+  }
+
+  appendChatMessage("user", question);
+  input.value = "";
+
+  if (!state.chatEndpoint) {
+    appendChatMessage("assistant", "还没有配置代理接口。为了安全，GitHub Pages 不能直接保存大模型密钥；把代理地址填到右上角设置后就可以提问。");
+    updateChatEndpointUi();
+    return;
+  }
+
+  submit.disabled = true;
+  setChatStatus("思考中", "busy");
+  try {
+    const answer = await requestModelAnswer(question);
+    appendChatMessage("assistant", answer);
+    setChatStatus("已连接", "ready");
+  } catch (error) {
+    appendChatMessage("assistant", `请求失败：${error.message}`);
+    setChatStatus("出错", "error");
+  } finally {
+    submit.disabled = false;
+    input.focus();
+  }
+}
+
+function setupChat() {
+  const form = $("#chatForm");
+  if (!form) {
+    return;
+  }
+
+  $("#chatSettingsToggle").addEventListener("click", () => {
+    const settings = $("#chatSettings");
+    settings.hidden = !settings.hidden;
+  });
+
+  $("#saveChatEndpoint").addEventListener("click", () => {
+    const endpoint = $("#chatEndpointInput").value.trim();
+    state.chatEndpoint = endpoint;
+    if (endpoint) {
+      localStorage.setItem(CHAT_ENDPOINT_KEY, endpoint);
+    } else {
+      localStorage.removeItem(CHAT_ENDPOINT_KEY);
+    }
+    updateChatEndpointUi();
+    renderChatMessages();
+  });
+
+  $("#clearChatEndpoint").addEventListener("click", () => {
+    state.chatEndpoint = "";
+    localStorage.removeItem(CHAT_ENDPOINT_KEY);
+    updateChatEndpointUi();
+    renderChatMessages();
+  });
+
+  $("#clearChat").addEventListener("click", () => {
+    state.chatMessages = [];
+    localStorage.removeItem(CHAT_MESSAGES_KEY);
+    renderChatMessages();
+  });
+
+  $("#chatQuestion").addEventListener("keydown", (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+      form.requestSubmit();
+    }
+  });
+
+  form.addEventListener("submit", handleChatSubmit);
+  updateChatEndpointUi();
+  renderChatMessages();
 }
 
 function taskId(week, index) {
@@ -1065,6 +1382,7 @@ function updateStats() {
   const done = Object.values(state.progress).filter(Boolean).length;
   $("#doneCount").textContent = done;
   $("#totalCount").textContent = total;
+  $("#projectCount").textContent = projects.length;
 }
 
 function switchTab(tabId) {
@@ -1185,6 +1503,7 @@ $("#resetProgress").addEventListener("click", () => {
   renderAll();
 });
 
+setupChat();
 renderAll();
 drawSignal();
 

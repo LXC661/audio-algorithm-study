@@ -44,5 +44,10 @@
 - `LLM_API_KEY`
 - `LLM_MODEL`
 - `ALLOWED_ORIGIN`，例如 `https://lxc661.github.io`
+- `ACCESS_TOKEN`，网页端访问 Worker 时需要输入的口令
 
-部署后，把 Worker 地址填到网页右侧设置里的“接口地址”即可。
+当前默认接口地址：
+
+`https://audio-algorithm-study-ai.xuechengliu235.workers.dev`
+
+网页端只需要在右侧设置里填写 `ACCESS_TOKEN` 对应的“访问口令”。

@@ -510,8 +510,10 @@ const reviews = [
 ];
 
 const CHAT_ENDPOINT_KEY = "audioPlanChatEndpoint";
+const CHAT_ACCESS_KEY = "audioPlanChatAccess";
 const CHAT_MESSAGES_KEY = "audioPlanChatMessages";
 const CHAT_HISTORY_LIMIT = 12;
+const DEFAULT_CHAT_ENDPOINT = "https://audio-algorithm-study-ai.xuechengliu235.workers.dev";
 const JOB_PROFILE = {
   role: "26 届声学算法培训生",
   responsibilities: [
@@ -544,7 +546,8 @@ const state = {
   filter: "all",
   query: "",
   progress: readJson("audioPlanProgress", {}),
-  chatEndpoint: localStorage.getItem(CHAT_ENDPOINT_KEY) || "",
+  chatEndpoint: localStorage.getItem(CHAT_ENDPOINT_KEY) || DEFAULT_CHAT_ENDPOINT,
+  chatAccess: localStorage.getItem(CHAT_ACCESS_KEY) || "",
   chatMessages: readJson(CHAT_MESSAGES_KEY, [])
 };
 
@@ -731,7 +734,8 @@ async function requestModelAnswer(question) {
   const response = await fetch(state.chatEndpoint, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      ...(state.chatAccess ? { "X-Study-Access": state.chatAccess } : {})
     },
     body: JSON.stringify({
       question,
@@ -762,7 +766,17 @@ function updateChatEndpointUi() {
   if (input) {
     input.value = state.chatEndpoint;
   }
-  setChatStatus(state.chatEndpoint ? "已连接" : "未连接", state.chatEndpoint ? "ready" : "");
+  const accessInput = $("#chatAccessInput");
+  if (accessInput) {
+    accessInput.value = state.chatAccess;
+  }
+  if (!state.chatEndpoint) {
+    setChatStatus("未连接");
+  } else if (!state.chatAccess) {
+    setChatStatus("需口令", "busy");
+  } else {
+    setChatStatus("已连接", "ready");
+  }
 }
 
 async function handleChatSubmit(event) {
@@ -779,6 +793,12 @@ async function handleChatSubmit(event) {
 
   if (!state.chatEndpoint) {
     appendChatMessage("assistant", "还没有配置代理接口。为了安全，GitHub Pages 不能直接保存大模型密钥；把代理地址填到右上角设置后就可以提问。");
+    updateChatEndpointUi();
+    return;
+  }
+
+  if (!state.chatAccess) {
+    appendChatMessage("assistant", "接口已经配置好了，但还需要在右上角设置里填入访问口令。这个口令用于限制别人直接调用你的 Worker。");
     updateChatEndpointUi();
     return;
   }
@@ -811,11 +831,18 @@ function setupChat() {
 
   $("#saveChatEndpoint").addEventListener("click", () => {
     const endpoint = $("#chatEndpointInput").value.trim();
+    const access = $("#chatAccessInput").value.trim();
     state.chatEndpoint = endpoint;
+    state.chatAccess = access;
     if (endpoint) {
       localStorage.setItem(CHAT_ENDPOINT_KEY, endpoint);
     } else {
       localStorage.removeItem(CHAT_ENDPOINT_KEY);
+    }
+    if (access) {
+      localStorage.setItem(CHAT_ACCESS_KEY, access);
+    } else {
+      localStorage.removeItem(CHAT_ACCESS_KEY);
     }
     updateChatEndpointUi();
     renderChatMessages();
@@ -823,7 +850,9 @@ function setupChat() {
 
   $("#clearChatEndpoint").addEventListener("click", () => {
     state.chatEndpoint = "";
+    state.chatAccess = "";
     localStorage.removeItem(CHAT_ENDPOINT_KEY);
+    localStorage.removeItem(CHAT_ACCESS_KEY);
     updateChatEndpointUi();
     renderChatMessages();
   });

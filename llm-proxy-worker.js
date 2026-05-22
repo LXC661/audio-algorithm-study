@@ -24,6 +24,10 @@ export default {
       return json({ error: "Missing LLM_API_URL, LLM_API_KEY, or LLM_MODEL." }, 500, origin);
     }
 
+    if (!hasAccess(request, env)) {
+      return json({ error: "Access token is missing or invalid." }, 401, origin);
+    }
+
     const body = await request.json();
     const question = String(body.question || "").trim();
     if (!question) {
@@ -82,11 +86,20 @@ function getAllowedOrigin(request, env) {
   return allowedOrigin === "*" || allowedOrigin === requestOrigin ? allowedOrigin : "";
 }
 
+function hasAccess(request, env) {
+  if (!env.ACCESS_TOKEN) {
+    return true;
+  }
+  const token = request.headers.get("X-Study-Access") || "";
+  return token === env.ACCESS_TOKEN;
+}
+
 function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, X-Study-Access",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
   };
 }
